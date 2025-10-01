@@ -1,18 +1,24 @@
 """
 Enunciado:
-Desarrolla una aplicación web básica con Flask que maneje diferentes tipos de metadatos enviados en las solicitudes HTTP y explore el uso de diferentes tipos MIME (tipos de contenido).
-La aplicación debe tener los siguientes endpoints:
+Desarrolla una aplicación web básica con Flask que responda a una petición GET y devuelva una pequeña página web.
+La aplicación debe tener el siguiente endpoint:
 
-1. `POST /text`: Recibe un texto plano con el tipo MIME `text/plain` y lo devuelve en la respuesta.
-2. `POST /html`: Recibe un fragmento HTML con el tipo MIME `text/html` y lo devuelve en la respuesta.
-3. `POST /json`: Recibe un objeto JSON con el tipo MIME `application/json` y lo devuelve en la respuesta.
-4. `POST /xml`: Recibe un documento XML con el tipo MIME `application/xml` y lo devuelve en la respuesta.
-5. `POST /image`: Recibe una imagen con el tipo MIME `image/png` y la guarda en el servidor.
+1. `GET /greet/<nombre>`: Devuelve una página web que saluda al usuario cuyo nombre se pasa como parámetro en la URL.
 
-Tu tarea es completar la implementación de la función create_app() y de los endpoints solicitados.
+Tu tarea es completar la implementación de la función create_app() y del endpoint solicitado.
+Además, debes crear una plantilla HTML utilizando Jinja2 que reciba una variable `nombre` y la utilice para mostrar un mensaje de saludo.
+
+Nota: Asegúrate de incluir una estructura HTML válida en la plantilla.
 """
 
-from flask import Flask, jsonify, request, Response
+from flask import Flask, render_template_string
+
+# Implementa la plantilla HTML aquí
+TEMPLATE = """
+<!doctype html>
+...
+</html>
+"""
 
 def create_app():
     """
@@ -20,45 +26,14 @@ def create_app():
     """
     app = Flask(__name__)
 
-    @app.route('/text', methods=['POST'])
-    def post_text():
+    @app.route('/greet/<nombre>', methods=['GET'])
+    def greet(nombre):
         """
-        Recibe un texto plano con el tipo MIME `text/plain` y lo devuelve en la respuesta.
+        Devuelve una página web que saluda al usuario utilizando una plantilla Jinja2
         """
-        # Implementa este endpoint para devolver el saludo personalizado
-        pass  
+        # Utiliza render_template_string para renderizar la plantilla con el nombre proporcionado:
 
-    @app.route('/html', methods=['POST'])
-    def post_html():
-        """
-        Recibe un fragmento HTML con el tipo MIME `text/html` y lo devuelve en la respuesta.
-        """
-        # Implementa este endpoint para devolver el saludo personalizado
-        pass  
-
-    @app.route('/json', methods=['POST'])
-    def post_json():
-        """
-        Recibe un objeto JSON con el tipo MIME `application/json` y lo devuelve en la respuesta.
-        """
-        # Implementa este endpoint para devolver el saludo personalizado
-        pass  
-
-    @app.route('/xml', methods=['POST'])
-    def post_xml():
-        """
-        Recibe un documento XML con el tipo MIME `application/xml` y lo devuelve en la respuesta.
-        """
-        # Implementa este endpoint para devolver el saludo personalizado
-        pass  
-
-    @app.route('/image', methods=['POST'])
-    def post_image():
-        """
-        Recibe una imagen con el tipo MIME `image/png` y la guarda en el servidor.
-        """
-        # Implementa este endpoint para devolver el saludo personalizado
-        pass  
+        pass
 
     return app
 

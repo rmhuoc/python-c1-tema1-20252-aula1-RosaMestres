@@ -1,8 +1,7 @@
 import pytest
 from flask.testing import FlaskClient
-from ej1a4 import create_app
-from scipy import misc
-import io
+from ej1a4 import create_app, TEMPLATE
+from jinja2 import Template
 
 @pytest.fixture
 def client() -> FlaskClient:
@@ -11,42 +10,22 @@ def client() -> FlaskClient:
     with app.test_client() as client:
         yield client
 
-def test_post_text(client):
-    response = client.post("/text", data="Este es un texto de prueba", content_type="text/plain")
-    assert response.status_code == 200
-    assert response.data.decode("utf-8") == "Este es un texto de prueba"
-    assert response.content_type == "text/plain"
+def test_template_contains_placeholder():
+    """
+    Verifica que la plantilla importada contiene el marcador de posición {{ nombre }}.
+    """
+    template = Template(TEMPLATE)
+    assert "nombre" in template.module.__dict__, "La plantilla debe contener el marcador de posición {{ nombre }}."
 
-def test_post_html(client):
-    response = client.post("/html", data="<h1>Prueba HTML</h1>", content_type="text/html")
-    assert response.status_code == 200
-    assert response.data.decode("utf-8") == "<h1>Prueba HTML</h1>"
-    assert response.content_type == "text/html"
-
-def test_post_json(client):
-    response = client.post("/json", json={"key": "value"})
-    assert response.status_code == 200
-    assert response.json == {"key": "value"}
-    assert response.content_type == "application/json"
-
-def test_post_xml(client):
-    xml_data = "<root><key>value</key></root>"
-    response = client.post("/xml", data=xml_data, content_type="application/xml")
-    assert response.status_code == 200
-    assert response.data.decode("utf-8") == xml_data
-    assert response.content_type == "application/xml"
-
-def test_post_image(client):
-    # Use an example image from scipy.misc
-    image = misc.face()
-    image_bytes = io.BytesIO()
-    misc.imsave(image_bytes, image, format="png")
-    image_bytes.seek(0)
-
-    data = {
-        "file": (image_bytes, "test_image.png")
-    }
-    response = client.post("/image", data=data, content_type="multipart/form-data")
-    assert response.status_code == 200
-    assert response.json["message"] == "Imagen guardada"
-    assert response.json["filename"] == "test_image.png"
+def test_greet_endpoint(client):
+    """
+    Prueba el endpoint /greet/<nombre> para validar que devuelve una página web con un saludo personalizado.
+    """
+    nombre = "Juan"
+    response = client.get(f"/greet/{nombre}")
+    assert response.status_code == 200, "El código de estado debe ser 200."
+    html_content = response.data.decode("utf-8")
+    assert "<!doctype html>" in html_content.lower(), "La respuesta debe contener la declaración <!doctype html>."
+    assert "<html>" in html_content.lower(), "La respuesta debe contener la etiqueta <html>."
+    assert "<body>" in html_content.lower(), "La respuesta debe contener la etiqueta <body>."
+    assert f"¡hola, {nombre}!" in html_content.lower(), "La respuesta debe contener el mensaje '¡Hola, <nombre>!' dentro del cuerpo."

@@ -9,7 +9,11 @@ def client() -> FlaskClient:
     with app.test_client() as client:
         yield client
 
-def test_hello_endpoint(client):
-    response = client.get("/hello")
-    assert response.status_code == 200
-    assert response.json == {"message": "¡Hola, mundo!"}
+def test_root_endpoint(client):
+    """
+    Prueba el endpoint / para validar que devuelve el mensaje correcto.
+    Si deseas cambiar el idioma del ejercicio, edita este archivo.
+    """
+    response = client.get("/")
+    assert response.status_code == 200, "El código de estado debe ser 200."
+    assert response.data.decode("utf-8") == "¡Hola mundo!", "El mensaje debe ser '¡Hola mundo!' en texto plano."

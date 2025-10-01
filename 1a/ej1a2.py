@@ -1,17 +1,20 @@
 """
 Enunciado:
-Desarrolla una aplicación web básica con Flask que responda a peticiones POST.
-La aplicación debe tener dos endpoints:
+Desarrolla una aplicación web básica con Flask que responda a diferentes peticiones GET.
+La aplicación debe tener los siguientes endpoints:
 
-1. `POST /greet?name=<nombre>`: Devuelve un saludo personalizado en formato JSON con la estructura {"message": "¡Hola, <nombre>!"}.
-2. `POST /greet-json`: Recibe un JSON con el campo "name" y devuelve un saludo personalizado en formato JSON con la estructura {"message": "¡Hola, <nombre>!"}.
+1. `GET /hello`: Devuelve un mensaje de saludo en texto plano con el contenido "¡Hola mundo!".
+2. `GET /goodbye`: Devuelve un mensaje de despedida en texto plano con el contenido "¡Adiós mundo!".
+3. `GET /greet/<nombre>`: Devuelve un mensaje personalizado en texto plano con el contenido "¡Hola, <nombre>!" donde <nombre> es un parámetro dinámico.
 
-Esta es una introducción simple a Flask para entender cómo manejar datos enviados al servidor mediante parámetros en la URL y mediante un cuerpo JSON.
+Esta es una introducción más avanzada a Flask para entender cómo manejar múltiples rutas y parámetros dinámicos.
 
 Tu tarea es completar la implementación de la función create_app() y de los endpoints solicitados.
+
+Nota: Si deseas cambiar el idioma del ejercicio, edita el archivo de prueba correspondiente.
 """
 
-from flask import Flask, jsonify, request
+from flask import Flask
 
 def create_app():
     """
@@ -19,21 +22,7 @@ def create_app():
     """
     app = Flask(__name__)
 
-    @app.route('/greet', methods=['POST'])
-    def greet():
-        """
-        Devuelve un saludo personalizado utilizando un parámetro en la URL
-        """
-        # Implementa este endpoint para devolver el saludo personalizado
-        pass
-
-    @app.route('/greet-json', methods=['POST'])
-    def greet_json():
-        """
-        Devuelve un saludo personalizado utilizando un JSON en el cuerpo de la solicitud
-        """
-        # Implementa este endpoint para devolver el saludo personalizado
-        pass
+    # Aquí debes implementar los endpoints solicitados
 
     return app
 

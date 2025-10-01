@@ -1,18 +1,16 @@
 """
 Enunciado:
-Desarrolla una aplicación web básica con Flask que maneje diferentes tipos de metadatos enviados en las solicitudes HTTP y explore el uso de diferentes tipos MIME (tipos de contenido).
-La aplicación debe tener los siguientes endpoints:
+Desarrolla una aplicación web básica con Flask que responda a una petición GET y devuelva una pequeña página web.
+La aplicación debe tener el siguiente endpoint:
 
-1. `GET /text`: Devuelve un texto plano con el tipo MIME `text/plain`.
-2. `GET /html`: Devuelve un fragmento HTML con el tipo MIME `text/html`.
-3. `GET /json`: Devuelve un objeto JSON con el tipo MIME `application/json`.
-4. `GET /xml`: Devuelve un documento XML con el tipo MIME `application/xml`.
-5. `GET /image`: Devuelve una imagen con el tipo MIME `image/png` (usa una imagen estática para este ejemplo).
+1. `GET /website`: Devuelve una página web con una estructura HTML mínima que incluya un mensaje "¡Hola mundo!".
 
-Tu tarea es completar la implementación de la función create_app() y de los endpoints solicitados.
+Tu tarea es completar la implementación de la función create_app() y del endpoint solicitado.
+
+Nota: Asegúrate de incluir una estructura HTML válida en la respuesta.
 """
 
-from flask import Flask, jsonify, Response, send_file
+from flask import Flask
 
 def create_app():
     """
@@ -20,45 +18,13 @@ def create_app():
     """
     app = Flask(__name__)
 
-    @app.route('/text', methods=['GET'])
-    def get_text():
+    @app.route('/website', methods=['GET'])
+    def get_website():
         """
-        Devuelve un texto plano con el tipo MIME `text/plain`
-        """
-        # Implementa este endpoint para devolver el contenido solicitado
-        pass  
-
-    @app.route('/html', methods=['GET'])
-    def get_html():
-        """
-        Devuelve un fragmento HTML con el tipo MIME `text/html`
+        Devuelve una página web con una estructura HTML mínima
         """
         # Implementa este endpoint para devolver el contenido solicitado
-        pass  
-
-    @app.route('/json', methods=['GET'])
-    def get_json():
-        """
-        Devuelve un objeto JSON con el tipo MIME `application/json`
-        """
-        # Implementa este endpoint para devolver el contenido solicitado
-        pass  
-
-    @app.route('/xml', methods=['GET'])
-    def get_xml():
-        """
-        Devuelve un documento XML con el tipo MIME `application/xml`
-        """
-        # Implementa este endpoint para devolver el contenido solicitado
-        pass  
-
-    @app.route('/image', methods=['GET'])
-    def get_image():
-        """
-        Devuelve una imagen con el tipo MIME `image/png`
-        """
-        # Implementa este endpoint para devolver el contenido solicitado
-        pass  
+        pass
 
     return app
 

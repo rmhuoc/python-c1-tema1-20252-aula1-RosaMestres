@@ -9,32 +9,15 @@ def client() -> FlaskClient:
     with app.test_client() as client:
         yield client
 
-def test_get_text(client):
-    response = client.get("/text")
-    assert response.status_code == 200
-    assert response.data.decode("utf-8") == "Este es un texto plano"
-    assert response.content_type == "text/plain"
+def test_website_endpoint(client):
+    """
+    Prueba el endpoint /website para validar que devuelve una página web con estructura HTML mínima.
+    """
+    response = client.get("/website")
+    assert response.status_code == 200, "El código de estado debe ser 200."
+    html_content = response.data.decode("utf-8")
+    assert "<!doctype html>" in html_content.lower(), "La respuesta debe contener la declaración <!doctype html>."
+    assert "<html>" in html_content.lower(), "La respuesta debe contener la etiqueta <html>."
+    assert "<body>" in html_content.lower(), "La respuesta debe contener la etiqueta <body>."
+    assert "¡hola mundo!" in html_content.lower(), "La respuesta debe contener el mensaje '¡Hola mundo!' dentro del cuerpo."
 
-def test_get_html(client):
-    response = client.get("/html")
-    assert response.status_code == 200
-    assert response.data.decode("utf-8") == "<h1>Este es un fragmento HTML</h1>"
-    assert response.content_type == "text/html"
-
-def test_get_json(client):
-    response = client.get("/json")
-    assert response.status_code == 200
-    assert response.json == {"mensaje": "Este es un objeto JSON"}
-    assert response.content_type == "application/json"
-
-def test_get_xml(client):
-    response = client.get("/xml")
-    assert response.status_code == 200
-    assert response.data.decode("utf-8") == "<mensaje>Este es un documento XML</mensaje>"
-    assert response.content_type == "application/xml"
-
-def test_get_image(client):
-    response = client.get("/image")
-    assert response.status_code == 200
-    assert response.content_type == "image/png"
-    # Opcional: Verificar el tamaño del archivo o contenido binario si es necesario
