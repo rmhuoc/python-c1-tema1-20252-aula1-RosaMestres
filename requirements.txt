@@ -1,3 +1,6 @@
 requests
 responses
-
+pybikes
+pandas
+matplotlib
+pytest
