@@ -1,91 +1,117 @@
 """
 Enunciado:
 Desarrolla un cliente HTTP básico utilizando la biblioteca requests de Python.
-El cliente debe realizar peticiones a la API pública de Wikipedia.
+El cliente debe realizar peticiones a la API pública del sistema de bicicletas compartidas de Barcelona
+que sigue el estándar General Bikeshare Feed Specification (GBFS).
 
 Tareas:
-1. Realizar una petición GET a la API de Wikipedia para obtener información sobre un artículo
-2. Procesar la respuesta JSON para extraer información relevante
+1. Realizar una petición GET a la API de GBFS para obtener la lista de feeds disponibles
+2. Procesar la respuesta JSON para extraer información relevante sobre los endpoints
 3. Manejar posibles errores en las peticiones
 
 Esta es una introducción a las peticiones HTTP en Python utilizando la biblioteca requests
 para entender cómo interactuar con APIs web.
 
 Tu tarea es completar la implementación de las funciones indicadas.
-
-Nota: La API de Wikipedia es estable y ampliamente utilizada, perfecta para aprender
-cómo funcionan las peticiones HTTP.
 """
 
 import requests
 
-def get_wikipedia_article(article_title):
+def get_gbfs_feeds():
     """
-    Realiza una petición GET a la API de Wikipedia para obtener información
-    sobre el artículo especificado.
-    
-    Args:
-        article_title (str): El título del artículo de Wikipedia a buscar
-        
+    Realiza una petición GET a la API de GBFS de Barcelona para obtener
+    la lista de feeds (endpoints) disponibles.
+
     Returns:
-        dict: Datos del artículo si se encuentra
-        None: Si ocurre un error o no se encuentra el artículo
+        dict: Datos de la respuesta si se obtiene correctamente
+        None: Si ocurre un error en la petición
     """
-    # La URL base de la API de Wikipedia en español
-    base_url = "https://es.wikipedia.org/api/rest_v1/page/summary/"
-    
-    # Implementa aquí la lógica para:
-    # 1. Construir la URL completa utilizando el título del artículo
-    # 2. Realizar una petición GET usando requests
-    # 3. Verificar el código de estado de la respuesta
-    # 4. Si es exitosa (código 200), devolver el contenido JSON
-    # 5. Si hay un error, manejar la excepción y devolver None
-    pass
+    # La URL base de la API de GBFS de Barcelona
+    base_url = "https://barcelona-sp.publicbikesystem.net/customer/gbfs/v2/gbfs.json"
+
+    try:
+        # Realizar petición GET a la URL
+        response = requests.get(base_url)
+
+        # Comprobar si la petición fue exitosa (código 200)
+        if response.status_code == 200:
+            # Devolver los datos en formato JSON
+            return response.json()
+        else:
+            # Si el código de estado no es 200, imprimir un mensaje de error
+            print(f"Error: La petición no fue exitosa. Código de estado: {response.status_code}")
+            return None
+    except requests.exceptions.RequestException as e:
+        # Capturar cualquier error que pueda ocurrir durante la petición
+        print(f"Error al realizar la petición: {e}")
+        return None
 
 
-def extract_article_info(article_data):
+def extract_feeds_info(feeds_data):
     """
-    Extrae información relevante del artículo a partir de los datos recibidos.
-    
+    Extrae la información de los feeds disponibles a partir de los datos recibidos.
+
     Args:
-        article_data (dict): Datos del artículo obtenidos de la API
-        
+        feeds_data (dict): Datos de los feeds obtenidos de la API
+
     Returns:
-        dict: Diccionario con los campos 'title', 'description' y 'extract'
+        list: Lista de diccionarios con los campos 'name' y 'url' de cada feed
         None: Si los datos de entrada son None o no tienen el formato esperado
     """
-    # Implementa aquí la lógica para:
-    # 1. Verificar que article_data no es None
-    # 2. Extraer el título, la descripción y el extracto del artículo
-    # 3. Devolver un diccionario con esos tres campos
-    # 4. Manejar posibles errores si algún campo no existe
-    pass
+    # Verificar si feeds_data es None
+    if feeds_data is None:
+        return None
+
+    try:
+        # Extraer la lista de feeds para el idioma inglés (en)
+        feeds = feeds_data["data"]["en"]["feeds"]
+
+        # Crear una lista con la información relevante de cada feed
+        feeds_info = []
+        for feed in feeds:
+            feeds_info.append({
+                "name": feed["name"],
+                "url": feed["url"]
+            })
+
+        return feeds_info
+    except (KeyError, TypeError) as e:
+        # Manejar el caso en que los datos no tienen la estructura esperada
+        print(f"Error al extraer la información de los feeds: {e}")
+        return None
 
 
-def print_article_summary(article_info):
+def print_feeds_summary(feeds_info):
     """
-    Imprime un resumen formateado del artículo.
-    
+    Imprime un resumen formateado de los feeds disponibles.
+
     Args:
-        article_info (dict): Información del artículo con los campos 'title',
-                            'description' y 'extract'
+        feeds_info (list): Lista de feeds con los campos 'name' y 'url'
     """
-    # Implementa aquí la lógica para:
-    # 1. Verificar que article_info no es None
-    # 2. Imprimir el título, la descripción y el extracto con formato
-    # 3. Si article_info es None, imprimir un mensaje de error
-    pass
+    if feeds_info is None:
+        print("Error: No feeds information available")
+        return
+
+    # Imprimir título y cantidad de feeds
+    print("=" * 50)
+    print("Barcelona Bike-Sharing System - GBFS Feeds")
+    print("=" * 50)
+    print(f"Available Feeds: {len(feeds_info)}")
+    print("-" * 50)
+
+    # Imprimir información de cada feed
+    for feed in feeds_info:
+        print(f"Name: {feed['name']}")
+        print(f"URL: {feed['url']}")
+        print("-" * 50)
 
 
 if __name__ == '__main__':
-    # Título del artículo a buscar
-    article = "Python_(programming_language)"
-    
-    # Obtener los datos del artículo
-    article_data = get_wikipedia_article(article)
-    
+    # Obtener los datos de los feeds disponibles
+    feeds_data = get_gbfs_feeds()
+
     # Extraer la información relevante
-    article_info = extract_article_info(article_data)
-    
+    feeds_info = extract_feeds_info(feeds_data)
+
     # Imprimir el resumen
-    print_article_summary(article_info)
+    print_feeds_summary(feeds_info)
