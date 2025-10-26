@@ -13,6 +13,8 @@ de ipify.org usando el formato JSON, que es más estructurado que el texto plano
 """
 
 import requests
+from requests.exceptions import RequestException
+
 
 def get_user_ip_json():
     """
@@ -29,8 +31,23 @@ def get_user_ip_json():
     # 3. Convertir la respuesta a formato JSON
     # 4. Extraer y devolver la IP del campo "ip" del objeto JSON
     # 5. Devolver None si hay algún error
-    pass
+    
+    url = 'https://api.ipify.org/?format=json'
 
+    try:
+        print(f"Realizando petición a: {url}")
+        response = requests.get(url)
+        response.raise_for_status()  # Lanza HTTPError para códigos 4xx/5xx
+    except Exception as e:
+        print(f"Error en la petición HTTP: {e}")
+        return None
+    
+    # Asegurar que solo devolvemos la IP si la respuesta fue 200
+    if response.status_code != 200:
+        return None
+ 
+    data = response.json()               # Convierte a JSON
+    return data.get("ip")                # devuelve el string IP
 def get_response_info():
     """
     Obtiene información adicional sobre la respuesta HTTP al consultar la API.
@@ -48,7 +65,28 @@ def get_response_info():
     #    - 'elapsed_time': El tiempo que tardó la petición (en milisegundos)
     #    - 'response_size': El tamaño de la respuesta en bytes
     # 4. Devolver None si hay algún error
-    pass
+    url = 'https://api.ipify.org/?format=json'
+
+    try:
+        print(f"Realizando petición a: {url}")
+        response = requests.get(url)
+        response.raise_for_status()  # Lanza HTTPError para códigos 4xx/5xx
+    except Exception as e:
+        print(f"Error en la petición HTTP: {e}")
+        return None
+    
+    # Asegurar que solo devolvemos la IP si la respuesta fue 200
+    if response.status_code != 200:
+        return None
+ 
+    data = response.json()               # Convierte a JSON
+    result = {
+            "content_type": response.headers.get("Content-Type"),
+            "elapsed_time": response.elapsed.total_seconds() * 1000,  # ms
+            "response_size": len(response.content)
+        }
+
+    return result
 
 if __name__ == "__main__":
     # Ejemplo de uso de las funciones
