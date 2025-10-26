@@ -14,6 +14,8 @@ en api.ipify.org y manejar el error de forma adecuada.
 """
 
 import requests
+from requests.exceptions import RequestException
+from requests.exceptions import HTTPError
 
 def get_nonexistent_resource():
     """
@@ -37,7 +39,31 @@ def get_nonexistent_resource():
     # 2. Capturar la excepción o error HTTP (no interrumpir la ejecución)
     # 3. Extraer la información solicitada del error
     # 4. Devolver un diccionario con la información del error
-    pass
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        # Si por algún motivo el recurso existiera, devuelve su JSON o texto
+        try:
+            data = response.json()
+        except ValueError:
+            data = {"content": response.text}
+        return {"status_code": response.status_code, "data": data}
+
+    except (HTTPError, RequestException) as e:
+        print(f"Error en la petición HTTP: {e}")
+        # Devuelve un diccionario incluso en caso de error
+        return {
+            "status_code": response.status_code,
+            "error_message": str(e),
+            "requested_url": url
+        }
+    except Exception as e:
+        print(f"Error inesperado: {e}")
+        return {
+            "status_code": 404,
+            "error_message": str(e),
+            "requested_url": url
+        }
 
 if __name__ == "__main__":
     # Ejemplo de uso de la función
