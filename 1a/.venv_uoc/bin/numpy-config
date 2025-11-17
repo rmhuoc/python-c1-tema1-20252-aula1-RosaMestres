@@ -1,0 +1,7 @@
+#!/Users/a5zkpfg/Documents/Personal/UOC/Python/C/python-c1-tema1-20252-aula1-RosaMestres/1a/.venv_uoc/bin/python3.12
+import sys
+from numpy._configtool import main
+if __name__ == '__main__':
+    if sys.argv[0].endswith('.exe'):
+        sys.argv[0] = sys.argv[0][:-4]
+    sys.exit(main())

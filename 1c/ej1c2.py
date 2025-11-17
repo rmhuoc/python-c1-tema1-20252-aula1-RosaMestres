@@ -35,7 +35,27 @@ def get_stations_data():
     # 2. Verificar que la respuesta sea correcta (código 200)
     # 3. Extraer y devolver el objeto 'data' del JSON recibido
     # 4. Manejar posibles errores (conexión, formato, etc.)
-    pass
+    try:
+        # 1 - peticion GET
+        response = requests.get(url)
+
+        # 2 - comprobar codigo de estado
+        if response.status_code != 200:
+            return None
+        
+        # 3 - extraer json y el objeto data
+        payload = response.json()
+        data = payload.get("data")
+
+        # 4 - validar que data exista y que sea un dict
+        if not isinstance(data,dict):
+            return None
+        return data
+    except (requests.RequestException, ValueError):
+        # Errores de red o de parseo JSON
+        return None
+
+
 
 
 def get_station_info(stations_data, station_id):
@@ -55,7 +75,25 @@ def get_station_info(stations_data, station_id):
     # 2. Buscar la estación con el ID proporcionado en la lista de estaciones
     # 3. Devolver la información completa de esa estación
     # 4. Si no existe, devolver None
-    pass
+    if stations_data is None or not isinstance(stations_data,dict):
+        return None
+    
+    stations = stations_data.get("stations")
+    if not isinstance(stations,list):
+        return None
+    
+    # la estacion a buscar debe ser str
+    station_id_str = str(station_id)
+
+    for station in stations:
+        # cada estacion es un dictado; buscamos por station_id
+        if str(station.get("station_id")) == station_id_str:
+            return station
+        
+    return None
+
+
+
 
 
 def get_station_coordinates(station_info):
@@ -74,7 +112,23 @@ def get_station_coordinates(station_info):
     # 2. Extraer los valores de latitud y longitud del diccionario
     # 3. Devolver ambos valores como una tupla (lat, lon)
     # 4. Manejar casos donde los campos no existan
-    pass
+   
+    
+    # los datos de GBFS suelen venir como lat y lon
+
+    # 1. Verificar que station_info no es None ni algo raro
+    if station_info is None or not isinstance(station_info, dict):
+        return None
+
+    # 2. Extraer lat y lon (en GBFS suelen llamarse 'lat' y 'lon')
+    lat = station_info.get("lat") or station_info.get("latitude")
+    lon = station_info.get("lon") or station_info.get("longitude")
+
+    # 3. Si falta alguno, devolver None
+    if lat is None or lon is None:
+        return None
+    
+    return lat,lon
 
 
 def create_stations_dataframe(stations_data):
@@ -93,7 +147,32 @@ def create_stations_dataframe(stations_data):
     # 2. Crear una lista de diccionarios con la información básica de cada estación
     # 3. Convertir esa lista en un DataFrame de pandas
     # 4. El DataFrame debe tener las columnas: 'station_id', 'latitude', 'longitude', 'name'
-    pass
+    if stations_data is None or not isinstance(stations_data, dict):
+        return None
+    stations = stations_data.get("stations")
+    if not isinstance(stations,list):
+        return None
+    #si la lista esta vacia
+    if len(stations) == 0:
+        return pd.DataFrame(columns=["station_id","latitude","longitude","name"])
+
+    rows = []
+    for st in stations:
+        station_id = st.get("station_id")
+        name = st.get("name")
+        lat = st.get("lat") or st.get("latitude")
+        lon = st.get("lon") or st.get("longitude")
+
+        rows.append(
+            {"station_id": station_id,
+             "latitude": lat,
+             "longitude": lon,
+             "name": name,
+
+            }
+        )
+    df = pd.DataFrame(rows,columns=["station_id","latitude","longitude","name"])
+    return df
 
 
 if __name__ == '__main__':
